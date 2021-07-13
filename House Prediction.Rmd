@@ -1,0 +1,453 @@
+---
+date: "22/03/2021"
+output:
+     pdf_document:
+         latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=TRUE, echo=FALSE,results='hide', message=FALSE,warning=FALSE}
+library(psych)
+library(ggplot2)
+
+data <- read.csv("C:\\Users\\mana1\\OneDrive\\Documents\\Data Science\\Spring\\AS\\house-data.csv")
+```
+## Introduction
+We have been given house-data to analyses and understand the housing market. We will be drawing summaries and plotting relationships between the data to make analysis. We will than be using Machine Learnig techniques to predict the Overall Cond and the Sale Price for the houses. The language to be used is R. We will be drawing conclusions about the data from all these steps.
+
+## Numerical and Graphical Summaries
+We have been provided data containing information about houses. The data consists of 1461 entries with 51 features. The data contains mostly categorical features with very few numerical ones. We use the Summary(data) function in R to get the summary the data. The function returns the Mean, Median, Min, Max, Quartiles and NA of all numerical columns. We still do not know a lot about the categorical and descriptive data features. We use the function describe from library(psych) to gain that. Describing the data returns a concise statistical summary according to each variable be it numerical or categorical. The function output statistical summaries like variables, count, mean, standard deviation, median, min, max etc. The outputs can be read below, due to limitations of the report we cannot include the detailed summaries here:
+```{r, include=TRUE}
+# Summary of the data will help us analyze all essential components we
+# need to know i.e. Mean, Median, Min, Max, Quartiles and NA's of all the columns.
+
+summary(data)
+
+
+
+
+
+# Describing the data returns a concise statistical summary according to each variable.
+
+describe(data)
+
+
+datesold <- data$MoSold + data$YrSold
+
+```
+
+As mentioned above the data is categorical, meaning we cannot generate heatmaps or correlation plots. We will be analysing the impact of variables on the response variable “Sale Price” using bivariate plots. We will be considering the variable “Sale Price” as the major response variable. We have made around 19 plots for all major features. Some will be included directly, and others will be given as comments about the data. 
+Key Takes from the data: 
+
+It can noted that most house with high prices had average overall condition while better condition sells at better price. 
+```{r, include=TRUE, echo=FALSE}
+# 1. A plot to show the relationship b/w Overall Cond and Sale Price
+ggplot(data, aes(as.factor(OverallCond), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#FF6666") + 
+  labs(y = "Sale Price", x = "Overall Condition")
+
+```
+We notice that Attached Garages tend to make the houses sell at higher rates. 
+```{r, include=TRUE, echo=FALSE}
+# 2. A plot to show the relationship b/w Garage Type and Sale Price
+ggplot(data, aes(as.factor(GarageType), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#424C98") + 
+  labs(y = "SalePrice", x = "GarageType")
+
+```
+
+Houses with Normal Sale Condition tends to have higher sale prices followed by Partial condition.
+```{r, include= FALSE}
+# 3. A plot to show the relationship b/w Sale Condition and Sale Price
+ggplot(data, aes(as.factor(SaleCondition), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#416415") + 
+  labs(y = "SalePrice", x = "Sale Condition")
+```
+Warranty Deed - Conventional Sale Type tend to bring higher sales for houses. 
+```{r, include = TRUE, echo=FALSE}
+# 4. A plot to show the relationship b/w Sale Type and Sale Price
+ggplot(data, aes(as.factor(SaleType), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#E67A35") + 
+  labs(y = "SalePrice", x = "Sale Type")
+```
+We also notice that houses last sold from 2013 - 2015 bring higher prices for sale.
+```{r, include=FALSE}
+# 5. A plot to show the relationship b/w Date(Month + Year) sold and Sale Price
+ggplot(data, aes(as.factor(datesold), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#BCC022") + 
+  labs(y = "SalePrice", x = "Date Sold")
+```
+Houses with Typical Functionality tend to have sale prices on the higher end of plot.
+```{r, include = TRUE, echo=FALSE}
+# 6. A plot to show the relationship b/w Fucntionality and Sale Price
+ggplot(data, aes(as.factor(Functional), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#540B62") + 
+  labs(y = "SalePrice", x = "Functionality")
+```
+House with 3 bedrooms followed by 2 have higher sale price ranges.
+```{r, include = TRUE, echo=FALSE}
+# 7. A plot to show the relationship b/w No. of Bedrooms and Sale Price
+ggplot(data, aes(as.factor(BedroomAbvGr), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#4E759A") + 
+  labs(y = "SalePrice", x = "No. of Bedrooms")
+```
+Houses equipped with Gas forced warm air furnace heating are mostly sold at higher prices.
+```{r, include = TRUE, echo=FALSE}
+# 8. A plot to show the relationship b/w Heating type and Sale Price
+ggplot(data, aes(as.factor(Heating), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#45523B") + 
+  labs(y = "SalePrice", x = "Heating Type")
+```
+Kitchen Quality being Typical/Average and Good is an essential attribute to get a good price for a house.
+```{r, include=FALSE}
+# 9. A plot to show the relationship b/w Foundation and Sale Price
+  ggplot(data, aes(as.factor(Foundation), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#AA7784") + 
+  labs(y = "SalePrice", x = "Foundation")
+```
+House with foundations made of Poured Contrete followed by  Cinder Block  have higher sale prices. 
+```{r, include=FALSE}
+# 10. A plot to show the relationship b/w Year Built and Sale Price
+ggplot(data, aes(YearBuilt, SalePrice)) + 
+    geom_line(color = "#AA9677") + 
+    labs(y = "SalePrice", x = "Year Built") + 
+  geom_point()
+```
+Houses built post 1980 tend to have higher sale prices.
+```{r, include=FALSE}
+# 11. A plot to show the relationship b/w House Style and Sale Price
+ggplot(data, aes(as.factor(HouseStyle), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#7EC288") + 
+  labs(y = "SalePrice", x = "House Style")
+```
+1 story and 2 story houses are more commonly sold at high prices.
+```{r, include=FALSE}
+# 12. A plot to show the relationship b/w Condition Proximity and Sale Price
+ggplot(data, aes(as.factor(Condition1), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#7E81C2") + 
+  labs(y = "SalePrice", x = "Proximity to Conditions")
+```
+Normal Proximity to Conditions tends to make the sale price go to the higher end.
+```{r, include=FALSE}
+# 13. A plot to show the relationship b/w Neighborhood and Sale Price
+ggplot(data, aes(as.factor(Neighborhood), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#4A3F32") + 
+  labs(y = "SalePrice", x = "Neighborhood")+ 
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+House in Neighborhood of College Creek and North Ames have high prices.
+```{r, include=FALSE}
+# 14. A plot to show the relationship b/w Utilities and Sale Price
+ggplot(data, aes(as.factor(Utilities), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#1A0F7F") + 
+  labs(y = "SalePrice", x = "Utilities")
+```
+Availability of All public Utilities tend to get more houses sold. 
+```{r, include=FALSE}
+# 15. A plot to show the relationship b/w Alley Access and Sale Price
+ggplot(data, aes(as.factor(Alley), SalePrice)) + 
+geom_bar(stat = "identity",fill = "#500A18") + 
+labs(y = "SalePrice", x = "Alley Access")
+```
+No Alley access tends to get more house sold at high prices.
+```{r, include = TRUE, echo=FALSE}
+# 16. A plot to show the relationship b/w Lot Configuration and Sale Price
+ggplot(data, aes(as.factor(LotConfig), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#7F770F") + 
+  labs(y = "SalePrice", x = "Lot Configuration")
+```
+Inside Lot Configuration followed by corner gets more houses sold at high prices.
+```{r, include=FALSE}
+# 17. A plot to show the relationship b/w Exterior Quality and Sale Price
+ggplot(data, aes(as.factor(ExterQual), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#A0AA77") + 
+  labs(y = "SalePrice", x = "Exterior Quality")
+```
+
+Exterior Quality being Typical/Average and Good is an essential attribute to get a good price for a house.
+```{r, include=FALSE}
+# 18. A plot to show the relationship b/w Kitchen Quality and Sale Price
+ggplot(data, aes(as.factor(KitchenQual), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#853A52") + 
+  labs(y = "SalePrice", x = "Kitchen Quality")
+```
+Presence of atleast 1 fireplace in the house tend to get a good price. 
+```{r, include=FALSE}
+# 19. A plot to show the relationship b/w Fireplaces and Sale Price
+ggplot(data, aes(as.factor(Fireplaces), SalePrice)) + 
+  geom_bar(stat = "identity",fill = "#3A8582") + 
+  labs(y = "SalePrice", x = "Fireplaces")
+```
+## Logistic Regression
+This is a multinomial classification problem due to the fact that there are 3 classes in the output data which are “Poor”, “Average” and “Good”.  Before the application of multinomial logistic regression algorithm, some pre-processing to data has been done. First of all, “PoolQC” , “Fence”, “MiscFeature”, “LotFrontage” and “Alley” variables have been removed from dataset. Because %99.5  of “PoolQC”, %80 of “Fence”, %96 of “MiscFeature” ,%17 of “LotFrontage” and %93 of “Alley” is missing. Moreover, “RoofMatl” has also been removed since 1434 value out of 1460 is the same. Therefore, there is no meaning to keep this feature in the model. There are around %2.5 missing values in “BsmtQual” and “BsmtCond” variables. But after inspecting them, It was realized that these values are missing because there is no basement on those houses and NA values have been replaced with “No_Basement” value. The same situation also appears in “GarageType” and “GarageCond”. The missing values in these variables have been replaced with “No_Garage”. Lastly, missing values in “MasVnrArea” have been replaced with 0 because the majority of values in this variable is 0. Then, the dataset has been split into training and test sets with 0.25 test set proportion.  The last step in pre-preprocessing was the scaling and centering (Standardization)the numeric values in the dataset. To prevent data leakage, standardization was trained on training set and transformed on the test set by using training mean and standard deviation. R does not support multinomial logistic regression by default. Hence, the “multinom” function from “nnet” package has been used as the algorithm. This function automatically deals with dummy encoding and label encoding automatically. After fitting the model to train data, model are tested with test data. According to confusion matrix created with test data, the model achieves %76.8 accuracy. The model is doing good job on detecting “Average” condition houses. This can be expected as “Average” class is the majority in dataset. The model achieves %58 accuracy for the class “Good” and only 15% accuracy for “Poor” class. The performance on the “Poor” class is not satisfying but it can be expected since only 31 example of 1460 belongs to “Poor” class. 
+
+
+
+## Dividing houses according to Overall Condition
+```{r, include=FALSE}
+library(dplyr)
+library(caret)
+library(nnet)
+library(rpart)
+library(e1071)
+
+f <- function (x) {
+        if ((x>=1)&(x<=3)) {
+          x <- "Poor"}
+        else if ((x>=4)&(x<=6)) {
+          x<-"Average" }
+        else
+        {
+          x<-"Good" }
+}
+
+data$OverallCond <- sapply(data$OverallCond,f)
+
+```
+## Preprocessing for modelling
+```{r, include=FALSE}
+data <- data %>% mutate(GarageType = ifelse(GarageArea == 0, "No_Garage", GarageType))
+data <- data %>% mutate(GarageCond = ifelse(GarageArea == 0, "No_Garage", GarageCond))
+data <- data %>% mutate(BsmtCond = ifelse(TotalBsmtSF == 0, "No_Basement", BsmtCond))
+data <- data %>% mutate(BsmtQual = ifelse(TotalBsmtSF == 0, "No_Basement", BsmtQual))
+data <- data %>% mutate(MasVnrArea = ifelse(is.na(MasVnrArea), 0, MasVnrArea))
+data <- subset(data, select = -c(PoolQC,Fence,MiscFeature,Alley,LotFrontage,RoofMatl,Exterior1st, Id))
+data$OverallCond <- as.factor(data$OverallCond)
+
+```
+## Train - Test Split and Scaling
+
+```{r, include=FALSE}
+set.seed(430)
+default_idx = createDataPartition(data$OverallCond, p = 0.75, list = FALSE)
+train_data = data[default_idx, ]
+test_data = data[-default_idx, ]
+
+preProcValues <- preProcess(train_data, method = c("center", "scale"))
+trainTransformed <- predict(preProcValues, train_data)
+testTransformed <- predict(preProcValues, test_data)
+```
+
+## Fitting Logistic Regression and Confusion Matrix on Test Data
+```{r, include=FALSE}
+mod <- multinom(OverallCond ~ ., trainTransformed)
+summary(mod)
+pred<-predict(mod, testTransformed, type='class')
+
+xtab <- table(pred, test_data$OverallCond)
+confusionMatrix(xtab)
+```
+
+## Applying a similar model studied in MA321 SVM linear classifier
+We  also carried out a SVM linear classifier as studied in MA321 to classify the Overall condition of the house. As we were comparing the two different classification methods. We decided to use the same training and testing split as was applied for the logistic regression to ensure a fair comparison. 
+Comparing the two classifiers.
+The accuracy of the model determines the overall correctly classified observations. The following are the Accuracy scores.
+•	Logistic Regression      77.41% Accuracy
+•	SVM Linear Classifier    75.48% Accuracy
+
+```{r, include=FALSE}
+library(kernlab)
+## Setting the overhead parameters
+trainTransformed[] <- data.matrix(trainTransformed)
+testTransformed[] <- data.matrix(testTransformed)
+str(testTransformed)
+
+##Training the model over the same train test split as was partitioned for the Logisitic Regression.
+train_data$OverallCond <- as.factor(train_data$OverallCond)
+dat <- data.frame( train_data , train_data$OverallCond)
+test_data$OverallCond <- as.factor(test_data$OverallCond)
+dat1 <- data.frame( test_data , test_data$OverallCond)
+
+svm_Linear <- svm(OverallCond~ ., data = dat, kernel = "linear", cost = 10, scale = FALSE)
+svm_Linear
+
+##Apply the trained model on the test data to predict the Overall Cond
+svm_predict <-predict(svm_Linear, dat, type = 'class')
+svm_predict
+
+xtab <- table(svm_predict, dat$OverallCond)
+confusionMatrix(xtab)
+```
+
+## Comparing the Sensitivity and Specificity
+Sensitivity is the rate of True Positives predicted by the model which is to say that the rate of each class being predicted correctly in this multi-nomial classification. 
+The specificity is the rate of True Negatives which is to say how many observations were correctly not classified in the specific class (observations not belonging to that class) were predicted to not belong to that class correctly.
+
+```{r, include=FALSE}
+evaluation_res <- read.csv("C:\\Users\\mana1\\OneDrive\\Documents\\Data Science\\Spring\\AS\\Metrics2.csv")
+print(evaluation_res)
+```
+
+Comparing the two Model's Sensitivity we can see that the SVM model is better at predicting whether an Overall condition is actually poor. The Logistic Regression is better at predicting the Average and Good Class. The same goes for the Specificity of the three classes.
+
+
+## Sale Price Prediction (Regression Model training and evaluation)
+Prediction of House Prices:
+
+In this part of assignment, we’ve to choose two models that can fit and predict the house prices at their best. Now normally, Regression techniques are the most prevalent and proven methods for this kind of problem, but firstly we were supposed to use ensemble methods and secondly, the final two techniques that I’ll be discussing ahead performed very well overall.
+
+First model or ensemble technique used is Random Forest Regressor. A RF can build multiple decision trees to be combined together for precise predictions. The best part about assembling different individual decision trees is that they are uncorrelated and stochastic at the same time, giving us way better results than single trees. This process of multitude decision trees is known as Bagging.
+
+Hyperparameter tuning that was optimal for our models was done using trial and error-based methods. Results obtained by the method gave R2 value of around 0.88 with validation R2 of 0.85.  It was trained on the pre-processed data I got from the previous part, that was performed by my colleague. 
+
+Second technique used, despite the fact that it is a greedy algorithm, and they tend to overfit the model, was Gradient Boosting. The working behind the model is that it depends on weak learner i.e., Decision Trees and lean on the intuition that the next model will be the best one. That allows the subsequent models to combine and reduce the residual effect of the predictions as a whole making it a better fit. This comparison of predictions and assignment of weights to the best learner is known as Boosting Technique. Results obtained by the method gave R2 value of 0.88 with validation R2 of 0.83.
+
+
+```{r, include=FALSE}
+sapply(data, function(x) sum(is.na(x)))
+str(data)
+data[] <- data.matrix(data)
+
+data <- data[, which(colMeans(!is.na(data)) > 0.85)]
+ncol(df)
+
+library(tidyr)
+
+data <- drop_na(data)
+nrow(data)
+  
+sapply(data, function(x) sum(is.na(x)))
+
+data<-data[ , !(names(data) %in%  c("Street","Utilities","Condition2","Heating","KitchenAbvGr","PoolArea"))]
+
+library(caret)       
+library(randomForest)
+library(gbm)
+
+set.seed(430)
+default_idx = createDataPartition(data$SalePrice, p = 0.75, list = FALSE)
+train = data[default_idx, ]
+test = data[-default_idx, ]
+
+mtry_arr <- c(9,16,22,28,39)
+
+for( i in mtry_arr){
+  print(paste(c("mtry: ", i), collapse = " "))
+  bagging_model = randomForest(SalePrice ~ ., data = train, mtry = i,ntrees = 120)
+  
+  predictions <-predict(bagging_model,test)
+  
+  rmse <- RMSE(predictions, test$SalePrice)
+  r2 <- R2(predictions, test$SalePrice)
+  print(paste(c("RMSE: ", rmse), collapse = " "))
+  print(paste(c("R2: ", r2), collapse = " "))
+  print("")
+}
+bagging_model = randomForest(SalePrice ~ ., data = train, mtry = 16,ntrees = 120)
+
+
+interaction_depths_arr <- c(3,6,9,12)
+
+for( i in interaction_depths_arr){
+  print(paste(c("interaction_depths_arr: ", i), collapse = " "))
+  boosting_model = gbm(SalePrice ~ ., data = train, distribution = "gaussian",n.trees = 120,interaction.depth = i)
+  
+  predictions <-predict(boosting_model,test)
+  
+  rmse <- RMSE(predictions, test$SalePrice)
+  r2 <- R2(predictions, test$SalePrice)
+  print(paste(c("RMSE: ", rmse), collapse = " "))
+  print(paste(c("R2: ", r2), collapse = " "))
+  print("")
+}
+
+
+boosting_model = gbm(SalePrice ~ ., data = train, distribution = "gaussian",n.trees = 120,interaction.depth = 6)
+
+```
+
+## Resampling Methods
+Now that we’ve modelled and predicted the house prices in the previous part, there is still a very vital step that can enhance the performance of the model by leaps and bounds. This step is multiple techniques that can be followed to improve the estimate of the population and it is known as Resampling of the data. Now statistically, sampling in a nutshell is the preference of data that suits our requirement from a set of huge population, carrying a hypothesis with it that it represents the whole population in some aspect. Now with this can come problem of its own. One can be of nature that a bias could’ve been introduced while specifying a subset of the population that can guide our predictions to different direction thus giving modelling results. There can also be random variations associations with the data that can affect our results ultimately. Dealing with these kinds of issues can be hefty and time consuming if dealt humanly. Here comes the resampling methods to save the day.
+
+Now that we have only modelled our data in one way i.e., the way it was chosen from a population, with no idea of uncertainty it carries along; we can sample the same data into chunks or folds that can be run multiple times to see the variation and uncertainty. This will be eventually help us to choose the best fold of them all. This technique is known as Resampling. There are different methods that can be used to resample are to be known as Resampling Methods.
+
+First method practiced in the assignment was K-Folds Cross Validation. It depends on the Train-Test split of the data that can give us a fair idea about the distribution of the data and which fold of the data is least skewed. As the name suggests data is randomly split into the given number of folds. Then with the given number of folds, model is fitted for each of them, and we get scores and associated error for each fold. This process is repeated for the given number of folds. K-Folds was applied to both of the previous provided models i.e., Random Forest and Gradient Boost and results were recorded. 
+
+Second method was Bootstrapping. It is widely used to draw statistical inferences from a given population. It follows in by extracting a sample of size n from the population and creating another random sample by replacing the original sample. These replications are done for given B times, giving a total of B Bootstrap samples. With the results obtained, evaluation is carried out using the population parameters i.e., population mean, population standard deviation, population variances and confidence intervals. Calculations were done on 95% CI to get BCa (Bias Corrected and Accelerated) bootstrap intervals. Results showed that the data was positively skewed and is to be adjusted towards right.
+
+```{r, include=FALSE}
+# Cross Validation and Bootstrapping for Random Forest
+library(boot)
+
+mtry_arr <- c(9,16,22,28)
+tunegrid <- expand.grid(.mtry=mtry_arr)
+train.control <- trainControl(method = "cv", number = 10)
+
+# Train the model
+model <- train(SalePrice ~ ., data = train, method = "rf", metric="RMSE",tuneGrid=tunegrid,trControl = train.control,ntree = 120,verbose = TRUE)
+print(model)
+
+mse <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample
+  fit <- randomForest(formula, data = d, mtry = 9, 
+                      importance = TRUE, ntrees = 120)
+  return(getElement(fit, "mse"))
+}
+
+results <- boot(data=train, statistic=mse,
+                R=1000, parallel = "multicore", ncpus=2,formula=SalePrice ~ .)
+
+# view results
+results
+plot(results)
+# get 95% confidence interval
+boot.ci(results, type="bca")
+
+# Cross Validation and Bootstrapping for Gradient Boosting
+
+tunegrid = expand.grid(interaction.depth = interaction_depths_arr,
+                       n.trees = 120,
+                       shrinkage = 0.1,
+                       n.minobsinnode = 10)
+train.control <- trainControl(method = "cv", number = 10)
+model <- train(SalePrice ~ ., data = train, method = "gbm", metric="RMSE",distribution="gaussian",tuneGrid=tunegrid,trControl = train.control,verbose = FALSE)
+print(model)
+
+mse <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample
+  fit <- gbm(SalePrice ~ ., data = train, distribution = "gaussian",n.trees = 120,interaction.depth = 6)
+  return(getElement(fit, "mse"))
+}
+
+# bootstrapping with 1000 replications
+results <- boot(data=train, statistic=mse,
+                R=1000, parallel = "multicore", ncpus=2, formula=SalePrice ~ .)
+
+# view results
+results
+plot(results)
+
+# get 95% confidence interval
+boot.ci(results, type="bca")
+
+
+```
+
+## Part 4
+In this section we aim to explore  the effect of house prices regarding the year they were build. Normally, in the Real State industry a house looses value as older it is. This happens due lots of factors but the most relevant is that the house is just old.The constructions techniques and materials used in the house are out-dated and they cannot compete with a similar house in characteristics but that has been built more recently. Also, investors are more cautious when buying old houses since they are more promt to have structural issues and other things affecting the house habitability. 
+
+We have grouped our data by the year it was built and computed the mean of sale price.
+```{r}
+library(dplyr)
+x <- data %>% group_by(YearBuilt) %>% summarize(SalePrice=mean(SalePrice))
+
+p <- ggplot(x, aes(y=SalePrice, x=YearBuilt)) + geom_line()
+p
+```
+
+As you can see in the plot above, older houses are prompt to be more cheap in a general basis. Nevertheless, this also depends on the house characteristics as it's not the same a 100 ft. sq. house than a 1000 ft. sq. house. To visualize the following we have aggregated the sale price instead of computing the mean and produced the following plot.
+
+```{r}
+library(dplyr)
+x <- data %>% group_by(YearBuilt) %>% summarize(SalePrice=sum(SalePrice),count=n())
+
+p <- ggplot(x, aes(y=SalePrice, x=YearBuilt)) + geom_line() + geom_bar(stat = "identity",color="blue",aes(y=count*50000))
+p
+```
+
+Regarding the above plot, we can see that the aggregated sale price for every built year houses increases exponentially as we approach the current year.Also, in blue we show the number of houses that were built that year. This shows us that most of the houses sold were built from 1980 and above. As we decrease in time, less houses are being sold and for less money.
+tinytex::install_tinytex()
+
